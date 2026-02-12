@@ -1,149 +1,204 @@
-# 🏥 ML Diabetes Predictor
+# 🩺 Diabetes Risk Prediction System (Machine Learning)
 
-A production-ready machine learning application for diabetes risk prediction using XGBoost classification. Deploy in minutes with Streamlit UI and Docker.
+## End-to-End Healthcare AI System Using XGBoost
 
-## 🎯 Key Features
+## 📌 Overview
 
-- **Interactive Web UI** - Built with Streamlit for intuitive patient data input
-- **ML Model** - XGBoost classifier trained on Pima Indians Diabetes Dataset
-- **Instant Predictions** - Real-time risk assessment with probability scores
-- **Docker Ready** - Containerized for consistent local & cloud deployment
-- **Cloud Deployment** - One-click deployment to Render.com
-- **Production Grade** - Health checks, validation, error handling
+This project presents a production-ready Machine Learning system for predicting diabetes risk using structured clinical data.
 
-## 🚀 Quick Start
+The objective was to build a robust and clinically meaningful prediction system that prioritizes **Recall (Sensitivity)** to minimize missed diagnoses.
 
-```bash
-git clone https://github.com/YOUR_USERNAME/ML-Diabetes-Predictor.git
-cd ML-Diabetes-Predictor
-pip install -r requirements.txt
-streamlit run ml_app.py
+The final deployed model is:
+
+> **XGBoost with Class-Weighted Learning**
+
+The system includes:
+
+* Data preprocessing pipeline
+* Class imbalance handling
+* Hyperparameter tuning with cross-validation
+* Model evaluation using healthcare-relevant metrics
+* Streamlit web application
+* FastAPI REST API
+* Docker containerization
+* Cloud deployment on Render
+
+## 🎯 Clinical Motivation
+
+Early detection of diabetes is critical in preventing severe complications such as:
+
+* Cardiovascular disease
+* Kidney failure
+* Neuropathy
+* Vision loss
+
+In healthcare screening systems:
+
+* False Negatives = Missed diagnosis
+* Missed diagnosis = Potential patient harm
+
+Therefore, **Recall was prioritized over Accuracy** during model selection.
+
+## 📊 Dataset
+
+* Structured clinical dataset
+* Binary target variable (0 = No Diabetes, 1 = Diabetes)
+* Imbalanced class distribution
+* Contains demographic and metabolic health indicators
+
+## ⚙️ Data Preprocessing
+
+### ✔ Missing Value Handling
+
+Certain biologically implausible zeros were treated as missing and imputed using the median.
+
+### ✔ Feature Scaling
+
+StandardScaler was applied to normalize numerical features.
+
+### ✔ Train/Validation/Test Split
+
+Stratified 70/15/15 split to preserve class distribution.
+
+### ✔ Data Leakage Prevention
+
+All preprocessing steps were applied correctly to avoid leakage into validation and test sets.
+
+## ⚖️ Handling Class Imbalance
+
+Three techniques were evaluated:
+
+* SMOTE
+* Random Undersampling
+* Class-Weighted Learning
+
+The final selected strategy was:
+
+> **Class-Weighted Learning with XGBoost**
+
+This approach preserved original data structure while improving sensitivity to minority cases.
+
+## 🧠 Model Development
+
+Models evaluated:
+
+* Logistic Regression
+* Random Forest
+* XGBoost
+
+Hyperparameter tuning was performed using GridSearchCV with **Recall as the primary scoring metric**.
+
+## 🏆 Final Model
+
+### XGBoost (Class-Weighted)
+
+### Why Selected:
+
+* Highest Recall
+* Strong ROC-AUC
+* Effective modeling of nonlinear feature interactions
+* Robust performance on structured tabular data
+
+## 📈 Evaluation Metrics
+
+Primary Metric:
+
+* **Recall (Sensitivity)**
+
+Secondary Metric:
+
+* ROC-AUC
+
+Accuracy was not prioritized due to class imbalance and clinical risk considerations.
+
+## 🧪 Example Prediction
+
+### API Endpoint
+
+```
+POST /predict
 ```
 
-Open browser to `http://localhost:8501`
+### Example Input
 
-## 📊 Prediction Features
-
-Predicts diabetes risk based on:
-- **Pregnancies** - Number of pregnancies
-- **Glucose** - Plasma glucose concentration
-- **Blood Pressure** - Diastolic blood pressure (mm Hg)
-- **Skin Thickness** - Triceps skin fold thickness (mm)
-- **Insulin** - 2-Hour serum insulin (mu U/ml)
-- **BMI** - Body Mass Index (weight in kg/(height in m)²)
-- **Diabetes Pedigree Function** - Genetic predisposition score
-- **Age** - Age in years
-
-## 🐳 Docker Deployment
-
-### Build Image
-```bash
-docker build -t diabetes-predictor .
+```json
+{
+  "Pregnancies": 2,
+  "Glucose": 140,
+  "BloodPressure": 80,
+  "SkinThickness": 25,
+  "Insulin": 100,
+  "BMI": 30.5,
+  "DiabetesPedigreeFunction": 0.5,
+  "Age": 45
+}
 ```
 
-### Run Container
-```bash
-docker run -p 8501:8501 diabetes-predictor
+### Example Output
+
+```json
+{
+  "diabetes_risk_probability": 0.78,
+  "high_risk": true
+}
 ```
 
-Access at `http://localhost:8501`
+## 🚀 Deployment
 
-## ☁️ Deploy to Render.com
+### 🌐 Streamlit Web App
 
-### Quick Setup
-1. Push code to GitHub
-2. Go to [Render Dashboard](https://dashboard.render.com)
-3. Click "New +" → "Web Service"
-4. Connect this repository
-5. Configure:
-   - **Environment:** Docker
-   - **Region:** Ohio (or your preference)
-   - **Plan:** Free tier available
-6. Click "Create Web Service"
+Interactive user interface for manual patient data entry.
 
-Render automatically builds and deploys from the Dockerfile. Your app will be live in minutes!
+### ⚡ FastAPI Backend
 
-## 📁 Project Structure
+REST API with Swagger documentation for integration into external systems.
+
+### 🐳 Docker
+
+Fully containerized for reproducibility and portability.
+
+### ☁️ Cloud Deployment
+
+Hosted on Render (free tier).
+
+## 📂 Repository Structure
 
 ```
-├── ml_app.py                          # Streamlit web application
-├── best_xgb_weighted_model.joblib     # Trained XGBoost model
-├── scaler.joblib                      # Data preprocessing scaler
-├── requirements.txt                   # Python dependencies
-├── Dockerfile                         # Container configuration
-├── render.yaml                        # Render.com deployment config
-├── diabetes_pima.csv                  # Training dataset
-└── README.md                          # Documentation
+├── ml_app.py
+├── api.py
+├── best_ml_model.pkl
+├── scaler.pkl
+├── requirements.txt
+├── Dockerfile
+├── Dockerfile.api
+└── README.md
 ```
 
-## 🔧 Technologies Used
+## ⚖️ Ethical Considerations
 
-- **Machine Learning:** XGBoost, scikit-learn, imbalanced-learn
-- **Web Framework:** Streamlit
-- **Deployment:** Docker, Render.com
-- **Data Processing:** pandas, joblib
-- **Python:** 3.9+
+* Model supports clinicians, does not replace them.
+* Dataset may contain demographic bias.
+* External validation required before real-world clinical use.
+* Continuous monitoring required to detect model drift.
 
-## 📦 Installation
+## 🧠 Key Takeaways
 
-### Requirements
-- Python 3.9 or higher
-- pip or conda
+* Tree-based ensemble models outperform deep learning on small structured datasets.
+* Class imbalance handling is critical in medical AI.
+* Recall is the most important metric in screening systems.
+* Responsible deployment requires transparency and validation.
 
-### Local Development
+## 🛠 Technologies Used
 
-```bash
-# Clone repository
-git clone https://github.com/YOUR_USERNAME/ML-Diabetes-Predictor.git
-cd ML-Diabetes-Predictor
+* Python
+* Scikit-Learn
+* XGBoost
+* FastAPI
+* Streamlit
+* Docker
+* Render
 
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+## 👨‍⚕️ Author
 
-# Install dependencies
-pip install -r requirements.txt
-
-# Run application
-streamlit run ml_app.py
-```
-
-## 📊 Model Performance
-
-- **Algorithm:** XGBoost with class weighting
-- **Dataset:** Pima Indians Diabetes Database
-- **Input Features:** 8 medical measurements
-- **Output:** Binary classification (0 = No Diabetes, 1 = Diabetes)
-
-## 🎨 User Interface
-
-The Streamlit app provides:
-- Interactive sliders for all 8 input features
-- Real-time prediction with confidence scores
-- Color-coded results (green = low risk, red = high risk)
-- Responsive design for desktop and mobile
-
-## 🔒 Privacy & Security
-
-- Model runs locally in your container
-- No data sent to external servers
-- Predictions computed on your infrastructure
-
-## 📝 License
-
-This project is open source and available under the MIT License.
-
-## 👨‍💻 Contributing
-
-Contributions welcome! Feel free to:
-- Report bugs
-- Suggest improvements
-- Submit pull requests
-
-## 📞 Support
-
-For issues, questions, or suggestions, please open an issue on GitHub.
-
----
-
-**Ready to deploy?** Push to GitHub and connect to Render.com for automatic deployment! 🚀
+**Ntimi Mwambasi**
+Healthcare AI/ML | Data Science | Clinical Decision Support Systems
